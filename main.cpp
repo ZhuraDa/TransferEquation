@@ -31,11 +31,7 @@ vector<double> KIR_nonlinear(const double& a,const double& t,const double& h,con
     }
     return w_new;
 
-
-
 }
-
-
 
 int main() {
     //вводим время в котором хотим посмотреть решение
@@ -72,7 +68,7 @@ int main() {
         w1[i] = (sin(i*h)+cos(i*h));
         w2[i] = sin(i*h)-cos(i*h);
         w3[i] = (sin(i*h)+cos(i*h));
-        w4[i] = sin(i*h)-cos(i*h);
+        w4[i] = -sin(i*h)+cos(i*h);
     }
     //применяем разные схемы КИР
     double now = 0;
@@ -89,7 +85,7 @@ int main() {
     //однородная система
     while(true){
         double n;
-        cout<<"точка"<<endl;
+        cout<<"номер точки"<<endl;
         cin>>n;
         if((n*h<0)||(n*h>L)){
             cout<<"выход за границы уравнения"<<endl;
@@ -110,7 +106,7 @@ int main() {
     //неоднородная система
     while(true){
         double n;
-        cout<<"точка"<<endl;
+        cout<<"номер точки"<<endl;
         cin>>n;
         if((n*h<0)||(n*h>L)){
             cout<<"выход за границы уравнения"<<endl;
@@ -127,16 +123,6 @@ int main() {
         cout<<"u_calc = "<<u_calc<<"||||| u_anal = "<<u_anal<<endl;
         cout<<"v_calc = "<<v_calc<<"||||| v_anal = "<<v_anal<<endl;
     }
-
-
-
-
-
-
-
-
-
-
 
     return 0;
 }
