@@ -2,35 +2,42 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <fstream>
+#include <string>
 
 
 using namespace std;
 
 vector<double> KIR_linear(const double& a,const double& t,const double& h,const vector<double>& w_old,const int& iteration){
     vector<double> w_new (w_old.size(),0);
-    int i =0;
-    if(a>0)
-        int i = iteration;
-    if(a<0)
-        int i = w_old.size()-iteration;
-    for(i;i<w_new.size();++i){
-        w_new[i]=w_old[i]+(abs(a)-a)/2*t/h*(w_old[i+1]-w_old[i])-(a+abs(a))/2*t/h*(w_old[i]-w_old[i-1]);
-    }
+    if(a>0){
+    for(unsigned long int i = iteration;i<w_new.size();++i) {
+        w_new[i] = w_old[i] + (abs(a) - a) / 2 * t / h * (w_old[i + 1] - w_old[i]) -
+                   (a + abs(a)) / 2 * t / h * (w_old[i] - w_old[i - 1]);
+    }}
+    else{
+            for (unsigned long int i = 0; i < w_new.size()-iteration;++i){
+                w_new[i] = w_old[i] + (abs(a) - a) / 2 * t / h * (w_old[i + 1] - w_old[i]) -
+                           (a + abs(a)) / 2 * t / h * (w_old[i] - w_old[i - 1]);
+            }
+        }
     return w_new;
 }
 
 vector<double> KIR_nonlinear(const double& a,const double& t,const double& h,const vector<double>& w_old,const int& iteration){
     vector<double> w_new (w_old.size(),0);
-    int i =0;
-    if(a>0)
-        int i = iteration;
-    if(a<0)
-        int i = w_old.size()-iteration;
-    for(i;i<w_new.size();++i){
-        w_new[i]=w_old[i]+(abs(a)-a)/2*t/h*(w_old[i+1]-w_old[i])-(a+abs(a))/2*t/h*(w_old[i]-w_old[i-1])+abs(a)/a*t;
+    if(a>0){
+        for(unsigned long int i = iteration;i<w_new.size();++i) {
+            w_new[i] = w_old[i] + (abs(a) - a) / 2 * t / h * (w_old[i + 1] - w_old[i]) -
+                       (a + abs(a)) / 2 * t / h * (w_old[i] - w_old[i - 1])+abs(a)/a*t;;
+        }}
+    else{
+        for (unsigned long int i = 0; i < w_new.size()-iteration;++i){
+            w_new[i] = w_old[i] + (abs(a) - a) / 2 * t / h * (w_old[i + 1] - w_old[i]) -
+                       (a + abs(a)) / 2 * t / h * (w_old[i] - w_old[i - 1])+abs(a)/a*t;;
+        }
     }
     return w_new;
-
 }
 
 int main() {
@@ -71,9 +78,7 @@ int main() {
         w4[i] = -sin(i*h)+cos(i*h);
     }
     //применяем разные схемы КИР
-    double now = 0;
     for(int i =0;i<t_interest/t;++i){
-        now+=i*t;
         w1 = KIR_linear(1,t,h,w1,i+1);
         w2 = KIR_linear(-1,t,h,w2,i+1);
         w3 = KIR_nonlinear(1,t,h,w3,i+1);
@@ -123,6 +128,37 @@ int main() {
         cout<<"u_calc = "<<u_calc<<"||||| u_anal = "<<u_anal<<endl;
         cout<<"v_calc = "<<v_calc<<"||||| v_anal = "<<v_anal<<endl;
     }
+
+    //запишем данные для графика
+
+    string path_zero ="data_zero.txt" ;
+    string path_one ="data_one.txt" ;
+    ofstream out_zero,out_one;          // поток для записи
+    out_zero.open(path_zero);// окрываем файл для записи
+    if (out_zero.is_open())
+    {
+        cout<<"open data_zero correctly"<<endl;
+        for(int i =0;i<w1.size();++i){
+            out_zero<<(w1[i]+w2[i])/2<<" "<<sin(i*h)*(cos(t_interest)+sin(t_interest))<<" "<<(w1[i]-w2[i])/2<<" "<<cos(h*i)*(cos(t_interest)-sin(t_interest))<<" "<<i*h<<endl;
+        }
+        out_zero<<t_interest;
+        out_zero.close();
+
+    }
+    out_one.open(path_one);
+    if (out_one.is_open())
+    {
+        cout<<"open data_one correctly"<<endl;
+        for(int i =0;i<w1.size();++i){
+            out_one<<(w3[i]-w4[i])/2<<" "<<sin(i*h)*(cos(t_interest)+sin(t_interest))+t_interest<<" "<<(w3[i]+w4[i])/2<<" "<<cos(h*i)*(cos(t_interest)-sin(t_interest))<<" "<<i*h<<endl;
+        }
+        out_one<<t_interest;
+        out_one.close();
+
+
+    }
+
+
 
     return 0;
 }
